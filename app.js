@@ -31,4 +31,7 @@ io.on("connection", (socket) => {
 });
 
 app.use(express.static("./public"));
-httpServer.listen(3000, console.log("listening on port 3000"));
+httpServer.listen(
+  process.env.PORT || 3000,
+  console.log("listening on port ", process.env.PORT || 3000)
+);
