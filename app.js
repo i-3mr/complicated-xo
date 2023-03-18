@@ -23,8 +23,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("play", (data) => {
-      console.log(data);
-      socket.broadcast.emit("play" , data);
+      io.to(room.id).emit("play", data);
     });
   });
   console.log("connect");
