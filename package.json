@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon app",
     "start": "node app"
   },
   "keywords": [],
@@ -15,5 +16,8 @@
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.21"
   }
 }

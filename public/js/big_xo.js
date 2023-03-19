@@ -1,5 +1,5 @@
-import { active } from "./main.js";
-import { socket } from "./soket.js";
+import { game } from "./main.js";
+import { socket } from "./socket.js";
 import { XO } from "./xo.js";
 import { XOArea } from "./xo_area.js";
 export class BigXO extends XO {
@@ -27,10 +27,10 @@ export class BigXO extends XO {
     }
     changePlace(placeIndex) {
         var _a;
-        active.currentPlayer = active.currentPlayer == "x" ? "o" : "x";
+        game.currentPlayer = game.currentPlayer == "x" ? "o" : "x";
         if (this.finished)
             return;
-        document.body.className = active.currentPlayer;
+        document.body.className = game.currentPlayer;
         if ((_a = this.areas[placeIndex]) === null || _a === void 0 ? void 0 : _a.done) {
             this.areas.forEach((el) => el.changeState(true));
         }
@@ -43,21 +43,25 @@ export class BigXO extends XO {
             });
         }
     }
-    build() {
+    build(array, place, currentPlayer) {
         var _a;
         const cont = document.createElement("div");
         cont.className = "big_xo";
         for (let i = 0; i < 9; i++) {
-            const ox = new XOArea({ active: true, id: i });
+            const ox = new XOArea({ active: true, id: i, array: array[i] });
             this.areas.push(ox);
             cont.append(ox.element);
         }
-        document.body.className = active.currentPlayer;
-        document.body.id = active.me;
+        document.body.className = game.currentPlayer;
+        document.body.id = game.me;
         (_a = document.querySelector("#app")) === null || _a === void 0 ? void 0 : _a.append(cont);
         socket.on("play", (data) => {
             const [area, i] = data;
             this.areas[area].playAt(i, true);
         });
+        if (place !== null) {
+            this.changePlace(place);
+            game.currentPlayer = currentPlayer;
+        }
     }
 }

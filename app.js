@@ -1,32 +1,40 @@
 const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-const joinRoom = require("./controllers/create-room");
+const { Rooms } = require("./controllers/room");
 
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   /* options */
 });
-const cors = require('cors');
+const cors = require("cors");
 
-cors("*")
+cors("*");
 io.on("connection", (socket) => {
+  socket.on("get-rooms", (callback) => {
+    callback(Rooms.rooms);
+  });
   // ...
-  socket.on("start", (data, callback) => {
-    const room = joinRoom();
-    socket.join(room.id);
+  socket.on("join-room", (room, callback) => {
+    socket.join(room);
     callback({
       status: "ok",
-      player: room.player,
-      room: room.id,
+      player: Rooms.at(room), // it returns x , o , or watcher if the room is full
+      room: room,
+      array: Rooms.rooms[room].array,
+      currentPlayer: Rooms.rooms[room].currentPlayer,
+      place: Rooms.rooms[room].place,
     });
-
+    // console.log(`JOINING ROOM ${room}....`, Rooms.rooms);
+    socket.on("disconnect" , ()=>{
+      
+    })
     socket.on("play", (data) => {
-      io.to(room.id).emit("play", data);
+      Rooms.play(room, data);
+      io.to(room).emit("play", data);
     });
   });
-  console.log("connect");
 });
 
 app.use(express.static("./public"));

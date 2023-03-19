@@ -1,5 +1,5 @@
-import { active, myArea } from "./main.js";
-import { socket } from "./soket.js";
+import { game, myArea } from "./main.js";
+import { socket } from "./socket.js";
 import { XO } from "./xo.js";
 
 export class XOArea extends XO {
@@ -8,10 +8,18 @@ export class XOArea extends XO {
   element: HTMLElement;
   id: number;
   done: boolean;
-  constructor({ active, id }: { active: boolean; id: number }) {
+  constructor({
+    active,
+    id,
+    array,
+  }: {
+    active: boolean;
+    id: number;
+    array: string[];
+  }) {
     super();
     this.active = active;
-    this.array = [];
+    this.array = array;
     this.id = id;
     this.element = this.build();
     this.done = false;
@@ -31,19 +39,19 @@ export class XOArea extends XO {
     }
   }
   playAt(i: number, other?: boolean) {
-    if(active.currentPlayer !== active.me && !other) return false;
+    if (game.currentPlayer !== game.me && !other) return false;
     if (!this.active || this.array[i] !== undefined) return false;
     const span = <HTMLElement>this.element.childNodes[i];
-    span.innerHTML = active.currentPlayer;
-    span.className = active.currentPlayer;
-    this.array[i] = active.currentPlayer;
-    socket.emit("play", [this.id, i]);
+    span.innerHTML = game.currentPlayer;
+    span.className = game.currentPlayer;
+    this.array[i] = game.currentPlayer;
+    socket.emit("play", [this.id, i, game.currentPlayer]);
     if (this.isWon(i)) {
-      myArea.add({ value: active.currentPlayer, index: this.id });
+      myArea.add({ value: game.currentPlayer, index: this.id });
       this.changeState(false);
       this.done = true;
-      this.element.classList.add("done", active.currentPlayer);
-      this.element.setAttribute("winner", active.currentPlayer);
+      this.element.classList.add("done", game.currentPlayer);
+      this.element.setAttribute("winner", game.currentPlayer);
       this.drawLine(this.getWinLine(i));
     }
     // no one won in this filed and it's full
@@ -63,9 +71,11 @@ export class XOArea extends XO {
     div.className = `xo_area ${!this.active ? "disabled" : ""}`;
     for (let i = 0; i < 9; i++) {
       const span = document.createElement("span");
+      span.className = this.array[i] !== undefined ? this.array[i] : "";
+      span.innerHTML = this.array[i] !== undefined ? this.array[i] : "";
       span.addEventListener("mouseenter", () => {
         if (!this.active || this.array[i] !== undefined) return false;
-        span.setAttribute("current", active.me);
+        span.setAttribute("current", game.me);
       });
       span.addEventListener("mouseleave", () => {
         if (!this.active || this.array[i] !== undefined) return false;

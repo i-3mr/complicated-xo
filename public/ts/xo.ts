@@ -1,4 +1,4 @@
-import { active } from "./main.js";
+import { game } from "./main.js";
 
 export class XO {
   array: string[];
@@ -35,7 +35,7 @@ export class XO {
         };
       }
     }
-    return {indexes:[] , direction:""};
+    return { indexes: [], direction: "" };
   }
 
   static getColumn(array: any[], index: number) {
