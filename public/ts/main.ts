@@ -16,6 +16,13 @@ socket.emit(
     cont.className = "rooms";
     for (const i of Object.keys(rooms))
       cont.append(new RoomButton({ id: i }).el);
+      const createRoom = document.createElement("button");
+      createRoom.className = "room-btn create";
+      createRoom.textContent = "create a room";
+      cont.append(createRoom);
+      createRoom.addEventListener("click", () => {
+        socket.emit("create-room", joinRoom);
+      });
     document.querySelector("#app")!.append(cont);
   }
 );

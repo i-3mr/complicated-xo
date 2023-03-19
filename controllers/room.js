@@ -3,8 +3,6 @@ class Room {
   constructor() {
     this.array = [[], [], [], [], [], [], [], [], []];
     this.players = { x: null, o: null };
-    this.place = null;
-    this.currentPlayer = null;
   }
 
   player(name) {
@@ -20,16 +18,11 @@ class Room {
   }
 }
 class Rooms {
-  static rooms = {
-    102: new Room(),
-    103: new Room(),
-    104: new Room(),
-    105: new Room(),
-    106: new Room(),
-  };
+  static rooms = {};
 
   static at(room) {
-    const player = this.rooms[room].player("test name");
+    const player = this.rooms[room]?.player("test name");
+    if (player === "o") delete this.rooms[room];
     return player;
   }
   static play(room, data) {
@@ -39,4 +32,4 @@ class Rooms {
   }
 }
 
-module.exports = { Rooms };
+module.exports = { Rooms, Room };

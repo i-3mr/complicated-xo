@@ -2,10 +2,10 @@ import { game, myArea } from "./main.js";
 import { socket } from "./socket.js";
 import { XO } from "./xo.js";
 export class XOArea extends XO {
-    constructor({ active, id, array, }) {
+    constructor({ active, id }) {
         super();
         this.active = active;
-        this.array = array;
+        this.array = [];
         this.id = id;
         this.element = this.build();
         this.done = false;
@@ -33,7 +33,7 @@ export class XOArea extends XO {
         span.innerHTML = game.currentPlayer;
         span.className = game.currentPlayer;
         this.array[i] = game.currentPlayer;
-        socket.emit("play", [this.id, i, game.currentPlayer]);
+        socket.emit("play", [this.id, i]);
         if (this.isWon(i)) {
             myArea.add({ value: game.currentPlayer, index: this.id });
             this.changeState(false);
@@ -56,8 +56,6 @@ export class XOArea extends XO {
         div.className = `xo_area ${!this.active ? "disabled" : ""}`;
         for (let i = 0; i < 9; i++) {
             const span = document.createElement("span");
-            span.className = this.array[i] !== undefined ? this.array[i] : "";
-            span.innerHTML = this.array[i] !== undefined ? this.array[i] : "";
             span.addEventListener("mouseenter", () => {
                 if (!this.active || this.array[i] !== undefined)
                     return false;

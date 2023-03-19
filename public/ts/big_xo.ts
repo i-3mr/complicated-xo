@@ -43,11 +43,11 @@ export class BigXO extends XO {
     }
   }
 
-  build(array: string[][], place: number, currentPlayer: string) {
+  build() {
     const cont = document.createElement("div");
     cont.className = "big_xo";
     for (let i = 0; i < 9; i++) {
-      const ox = new XOArea({ active: true, id: i, array: array[i] });
+      const ox = new XOArea({ active: true, id: i });
       this.areas.push(ox);
       cont.append(ox.element);
     }
@@ -59,9 +59,5 @@ export class BigXO extends XO {
       this.areas[area].playAt(i, true);
     });
 
-    if (place !== null) {
-      this.changePlace(place);
-      game.currentPlayer = currentPlayer;
-    }
   }
 }
