@@ -37,6 +37,11 @@ function start() {
         (_a = game.other) === null || _a === void 0 ? void 0 : _a.changeState(3);
         game.connected = false;
     });
+    socket.on("reconnect", () => {
+        var _a;
+        (_a = game.other) === null || _a === void 0 ? void 0 : _a.changeState(1);
+        game.connected = true;
+    });
     socket.emit("get-rooms", (rooms) => {
         const cont = document.createElement("div");
         cont.className = "rooms";

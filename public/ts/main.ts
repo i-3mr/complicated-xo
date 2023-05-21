@@ -49,6 +49,10 @@ function start() {
     game.other?.changeState(3);
     game.connected = false;
   });
+  socket.on("reconnect", () => {
+    game.other?.changeState(1);
+    game.connected = true;
+  });
   socket.emit(
     "get-rooms",
     (rooms: {
