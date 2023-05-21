@@ -7,14 +7,14 @@ export class RoomButton {
     this.id = id;
     this.el = this.build();
   }
-  click() {
+  join() {
     socket.emit("join-room", this.id, joinRoom);
   }
   build() {
     const button = document.createElement("button");
     button.textContent = this.id;
     button.className = "room-btn";
-    button.addEventListener("click", () => this.click());
+    button.addEventListener("click", () => this.join());
 
     return button;
   }

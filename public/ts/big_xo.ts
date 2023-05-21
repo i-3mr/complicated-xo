@@ -1,6 +1,7 @@
-import { game } from "./main.js";
+import { ConnectionState } from "./components/connection_state.js";
+import { game, settings } from "./main.js";
 import { socket } from "./socket.js";
-import { XO } from "./xo.js";
+import { xo, XO } from "./xo.js";
 import { XOArea } from "./xo_area.js";
 
 export class BigXO extends XO {
@@ -13,7 +14,7 @@ export class BigXO extends XO {
     this.array = [];
     this.finished = false;
   }
-  add({ value, index }: { value: string; index: number }) {
+  add({ value, index }: { value: xo; index: number }) {
     if (this.array[index] === undefined) {
       this.array[index] = value;
     }
@@ -41,6 +42,11 @@ export class BigXO extends XO {
         else el?.changeState(false);
       });
     }
+
+    if (!settings.online) {
+      document.body.className = game.currentPlayer;
+      document.body.id = game.currentPlayer;
+    }
   }
 
   build() {
@@ -54,10 +60,17 @@ export class BigXO extends XO {
     document.body.className = game.currentPlayer;
     document.body.id = game.me;
     document.querySelector("#app")?.append(cont);
-    socket.on("play", (data: number[]) => {
-      const [area, i] = data;
-      this.areas[area].playAt(i, true);
-    });
 
+    game.other = new ConnectionState({ state: 0 });
+
+    // online
+    if (settings.online) {
+      socket.on("play", (data: number[]) => {
+        if (game.currentPlayer == game.me) return;
+        const [area, i] = data;
+        this.areas[area].playAt(i, true);
+        socket.emit("played");
+      });
+    }
   }
 }
