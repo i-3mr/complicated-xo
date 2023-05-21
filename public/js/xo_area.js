@@ -1,4 +1,13 @@
-import { game, myArea } from "./main.js";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import { game, myArea, settings } from "./main.js";
 import { socket } from "./socket.js";
 import { XO } from "./xo.js";
 export class XOArea extends XO {
@@ -25,15 +34,30 @@ export class XOArea extends XO {
         }
     }
     playAt(i, other) {
-        if (game.currentPlayer !== game.me && !other)
-            return false;
-        if (!this.active || this.array[i] !== undefined)
-            return false;
-        const span = this.element.childNodes[i];
-        span.innerHTML = game.currentPlayer;
-        span.className = game.currentPlayer;
-        this.array[i] = game.currentPlayer;
-        socket.emit("play", [this.id, i]);
+        return __awaiter(this, void 0, void 0, function* () {
+            if (settings.online && !game.connected)
+                return;
+            if (game.currentPlayer !== game.me && !other)
+                return false;
+            if (!this.active || this.array[i] !== undefined)
+                return false;
+            const span = this.element.childNodes[i];
+            span.innerHTML = game.currentPlayer;
+            span.className = game.currentPlayer;
+            this.array[i] = game.currentPlayer;
+            // online
+            if (settings.online && !other) {
+                socket.emit("play", [this.id, i]);
+                socket.once("played", () => {
+                    console.log("played was received");
+                    this.wasPlayedAt(i);
+                });
+            }
+            else
+                this.wasPlayedAt(i);
+        });
+    }
+    wasPlayedAt(i) {
         if (this.isWon(i)) {
             myArea.add({ value: game.currentPlayer, index: this.id });
             this.changeState(false);
@@ -45,11 +69,12 @@ export class XOArea extends XO {
         // no one won in this filed and it's full
         if (this.array.length === 9 &&
             [...this.array.values()].every((el) => el !== undefined)) {
-            console.log("LOCKED");
             this.changeState(false);
             this.done = true;
         }
         myArea.changePlace(i);
+        if (!settings.online)
+            game.me = game.me == "x" ? "o" : "x";
     }
     build() {
         const div = document.createElement("div");

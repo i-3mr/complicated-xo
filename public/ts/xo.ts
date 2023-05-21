@@ -1,5 +1,6 @@
 import { game } from "./main.js";
 
+export type xo = "x" | "o";
 export class XO {
   array: string[];
   constructor() {
@@ -45,11 +46,11 @@ export class XO {
     return array.filter((el, ind) => ~~(ind / 3) === ~~(index / 3));
   }
   static getMinusDiagonal(array: any[], index: number) {
-    return array.filter((el, i, arr) => i % 4 === 0);
+    return array.filter((el, i) => i % 4 === 0);
   }
   static getPlusDiagonal(array: any[], index: number) {
     return array.filter(
-      (el, i, arr) => i % 2 === 0 && (i % 4 !== 0 || i === 4)
+      (el, i) => i % 2 === 0 && (i % 4 !== 0 || i === 4)
     );
   }
 }

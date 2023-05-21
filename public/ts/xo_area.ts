@@ -1,9 +1,9 @@
-import { game, myArea } from "./main.js";
+import { game, myArea, settings } from "./main.js";
 import { socket } from "./socket.js";
-import { XO } from "./xo.js";
+import { xo, XO } from "./xo.js";
 
 export class XOArea extends XO {
-  array: string[];
+  array: xo[];
   active: boolean;
   element: HTMLElement;
   id: number;
@@ -30,14 +30,26 @@ export class XOArea extends XO {
       span?.classList.add(direction);
     }
   }
-  playAt(i: number, other?: boolean) {
+  async playAt(i: number, other?: boolean) {
+    if (settings.online && !game.connected) return;
     if (game.currentPlayer !== game.me && !other) return false;
     if (!this.active || this.array[i] !== undefined) return false;
     const span = <HTMLElement>this.element.childNodes[i];
     span.innerHTML = game.currentPlayer;
     span.className = game.currentPlayer;
     this.array[i] = game.currentPlayer;
-    socket.emit("play", [this.id, i]);
+
+    // online
+    if (settings.online && !other) {
+      socket.emit("play", [this.id, i]);
+      socket.once("played", () => {
+        console.log("played was received");
+        this.wasPlayedAt(i);
+      });
+    } else this.wasPlayedAt(i);
+  }
+
+  wasPlayedAt(i: number) {
     if (this.isWon(i)) {
       myArea.add({ value: game.currentPlayer, index: this.id });
       this.changeState(false);
@@ -51,13 +63,14 @@ export class XOArea extends XO {
       this.array.length === 9 &&
       [...this.array.values()].every((el) => el !== undefined)
     ) {
-      console.log("LOCKED");
       this.changeState(false);
       this.done = true;
     }
 
     myArea.changePlace(i);
+    if (!settings.online) game.me = game.me == "x" ? "o" : "x";
   }
+
   build() {
     const div = document.createElement("div");
     div.className = `xo_area ${!this.active ? "disabled" : ""}`;

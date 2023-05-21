@@ -1,7 +1,15 @@
 import { game, myArea } from "./main.js";
+import { socket } from "./socket.js";
 export function joinRoom(res) {
-    var _a;
-    console.log(res);
+    var _a, _b;
+    socket.on("other_state", (connected) => {
+        var _a, _b;
+        if (!connected)
+            (_a = game.other) === null || _a === void 0 ? void 0 : _a.changeState(2);
+        else
+            (_b = game.other) === null || _b === void 0 ? void 0 : _b.changeState(1);
+        game.connected = connected;
+    });
     if (res.player === null)
         return console.log("full");
     if (res.status == "ok") {
@@ -12,4 +20,6 @@ export function joinRoom(res) {
         h1.textContent = `You Are ${res.player.toLocaleUpperCase()}, at room ${res.room}`;
         document.querySelector("#app").prepend(h1);
     }
+    if (res.other)
+        (_b = game.other) === null || _b === void 0 ? void 0 : _b.changeState(1);
 }

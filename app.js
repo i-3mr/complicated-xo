@@ -22,26 +22,50 @@ io.on("connection", (socket) => {
     const room = uuid.v4().split("-")[0];
     Rooms.rooms[room] = newRoom;
     socket.join(room);
+    socket.room = room;
+
     callback({
       status: "ok",
-      player: Rooms.at(room), // it returns x , o , or watcher if the room is full
+      player: Rooms.at(room),
       room: room,
+      other: false,
     });
-    socket.on("play", (data) => {
+
+    socket.on("play", (data, callBack) => {
       io.to(room).emit("play", data);
+    });
+    socket.on("played", () => {
+      io.to(room).emit("played");
     });
   });
   socket.on("join-room", (room, callback) => {
     socket.join(room);
+    socket.room = room;
+    io.to(room).emit("other_state", true);
     callback({
       status: "ok",
-      player: Rooms.at(room), // it returns x , o , or watcher if the room is full
+      player: Rooms.at(room),
       room: room,
+      other: true,
     });
     socket.on("play", (data) => {
       io.to(room).emit("play", data);
     });
+    socket.on("played", () => {
+      io.to(room).emit("played");
+    });
   });
+  socket.on("disconnect", (reason, details) => {
+    // get room
+    console.log(socket.room);
+    io.to(socket.room).emit("other_state", false);
+  });
+
+  socket.on("reconnect", (attemptNumber) => {
+    console.log(socket.room);
+    io.to(socket.room).emit("other_state", true);
+  });
+
 });
 
 app.use(express.static("./public"));
