@@ -44,10 +44,12 @@ export class XOArea extends XO {
 
     // online
     if (settings.online && !other) {
+      this.wasPlayedAt(i);
+      myArea.stopTime();
       socket.emit("play", [this.id, i]);
       socket.once("played", () => {
         console.log("played was received");
-        this.wasPlayedAt(i);
+        myArea.continueTime();
       });
     } else this.wasPlayedAt(i);
   }

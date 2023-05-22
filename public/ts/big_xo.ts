@@ -127,6 +127,21 @@ export class BigXO extends XO {
     this.oTime?.reset();
   }
 
+  continueTime() {
+    if (game.currentPlayer == "x") {
+      this.xTime?.startDecrement().catch(() => {
+        showWinner("x");
+        document.body.id = "x";
+      });
+    } else {
+      this.oTime?.startDecrement().catch(() => {
+        showWinner("o");
+        document.body.id = "o";
+      });
+    }
+  }
+
+
   rebuild() {
     this.areas.forEach((el) => el.element.remove());
     this.areas = [];

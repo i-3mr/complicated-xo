@@ -123,6 +123,21 @@ export class BigXO extends XO {
         (_a = this.xTime) === null || _a === void 0 ? void 0 : _a.reset();
         (_b = this.oTime) === null || _b === void 0 ? void 0 : _b.reset();
     }
+    continueTime() {
+        var _a, _b;
+        if (game.currentPlayer == "x") {
+            (_a = this.xTime) === null || _a === void 0 ? void 0 : _a.startDecrement().catch(() => {
+                showWinner("x");
+                document.body.id = "x";
+            });
+        }
+        else {
+            (_b = this.oTime) === null || _b === void 0 ? void 0 : _b.startDecrement().catch(() => {
+                showWinner("o");
+                document.body.id = "o";
+            });
+        }
+    }
     rebuild() {
         this.areas.forEach((el) => el.element.remove());
         this.areas = [];
