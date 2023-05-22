@@ -14,8 +14,9 @@ const cors = require("cors");
 cors("*");
 io.on("connection", (socket) => {
   socket.on("get-rooms", (callback) => {
-    callback(Rooms.rooms);
+    callback(Rooms.getRooms());
   });
+
   // ...
   socket.on("create-room", (callback) => {
     const newRoom = new Room();
@@ -37,8 +38,12 @@ io.on("connection", (socket) => {
     socket.on("played", () => {
       io.to(room).emit("played");
     });
+
+    // announce new room
+    io.emit("new-room-created", { [room]: newRoom });
   });
   socket.on("join-room", (room, callback) => {
+    io.emit("delete-room", room);
     socket.join(room);
     socket.room = room;
     io.to(room).emit("other_state", true);
@@ -57,11 +62,10 @@ io.on("connection", (socket) => {
   });
   socket.on("disconnect", (reason, details) => {
     // get room
-    console.log(socket.room);
     io.to(socket.room).emit("other_state", false);
   });
 
-  socket.on("reconnect", (attemptNumber) => {
+  socket.on("connect", (attemptNumber) => {
     console.log(socket.room);
     io.to(socket.room).emit("other_state", true);
   });

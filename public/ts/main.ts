@@ -15,7 +15,7 @@ const game: {
 const myArea = new BigXO();
 
 const onlineBtn = document.createElement("button");
-onlineBtn.className = "online-btn";
+onlineBtn.className = "online-btn btn";
 onlineBtn.textContent = "online";
 onlineBtn.addEventListener("click", () => {
   settings.online = true;
@@ -23,14 +23,25 @@ onlineBtn.addEventListener("click", () => {
 });
 
 const offlineBtn = document.createElement("button");
-offlineBtn.className = "offline-btn";
+offlineBtn.className = "offline-btn btn";
 offlineBtn.textContent = "offline";
 offlineBtn.addEventListener("click", () => {
   settings.online = false;
   start();
 });
 
-document.querySelector("#app")!.append(onlineBtn, offlineBtn);
+// bot button
+const botBtn = document.createElement("button");
+botBtn.className = "bot-btn btn";
+botBtn.textContent = "bot";
+botBtn.addEventListener("click", () => {
+  botBtn.remove();
+  settings.online = false;
+  start();
+  setInterval(bot);
+});
+
+document.querySelector("#app")!.append(onlineBtn, offlineBtn, botBtn);
 
 function start() {
   document.querySelector(".online-btn")?.remove();
@@ -49,6 +60,26 @@ function start() {
     game.other?.changeState(3);
     game.connected = false;
   });
+  socket.on("reconnect", () => {
+    game.other?.changeState(1);
+    game.connected = true;
+  });
+  socket.on("delete-room", (id: string) => {
+    document.querySelector(`#i${id}`)?.remove();
+  });
+  socket.on(
+    "new-room-created",
+    (data: {
+      [id: string]: {
+        x: string;
+        o: string;
+      };
+    }) => {
+      const cont = document.querySelector(".rooms")!;
+      const room = new RoomButton({ id: Object.keys(data)[0] });
+      cont?.prepend(room.el);
+    }
+  );
   socket.emit(
     "get-rooms",
     (rooms: {
@@ -73,4 +104,16 @@ function start() {
     }
   );
 }
-export { game, myArea, settings };
+export { game, myArea, settings, start };
+
+function bot() {
+  const spans = [
+    ...document.querySelectorAll(
+      ".xo_area:not(.disabled) span:not([class='o'] , [class='x'])"
+    ),
+  ];
+  if (!spans.length) return;
+
+  const span = spans[Math.floor(Math.random() * spans.length)] as HTMLElement;
+  span?.click();
+}
