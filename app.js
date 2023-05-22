@@ -57,11 +57,10 @@ io.on("connection", (socket) => {
   });
   socket.on("disconnect", (reason, details) => {
     // get room
-    console.log(socket.room);
     io.to(socket.room).emit("other_state", false);
   });
 
-  socket.on("reconnect", (attemptNumber) => {
+  socket.on("connect", (attemptNumber) => {
     console.log(socket.room);
     io.to(socket.room).emit("other_state", true);
   });
