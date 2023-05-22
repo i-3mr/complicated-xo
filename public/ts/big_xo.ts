@@ -1,6 +1,7 @@
 import { ConnectionState } from "./components/connection_state.js";
 import { game, myArea, settings, start } from "./main.js";
 import { socket } from "./socket.js";
+import { Time } from "./time.js";
 import { xo, XO } from "./xo.js";
 import { XOArea } from "./xo_area.js";
 
@@ -8,11 +9,17 @@ export class BigXO extends XO {
   array: string[];
   areas: XOArea[];
   finished: boolean;
-  constructor() {
+  oTime: Time | null = null;
+  xTime: Time | null = null;
+  constructor({ minutes }: { minutes: number }) {
     super();
     this.areas = [];
     this.array = [];
     this.finished = false;
+    if (game.timeMode) {
+      this.xTime = new Time({ minutes });
+      this.oTime = new Time({ minutes });
+    }
   }
   add({ value, index }: { value: xo; index: number }) {
     if (this.array[index] === undefined) {
@@ -29,9 +36,27 @@ export class BigXO extends XO {
       });
       this.finished = true;
       showWinner(value);
+      this.xTime?.reset();
+      this.oTime?.reset();
     }
   }
   changePlace(placeIndex: number) {
+    if (game.timeMode) {
+      if (game.currentPlayer == "x") {
+        this.xTime?.stopDecrement();
+        this.oTime?.startDecrement().catch(() => {
+          showWinner("x");
+          document.body.id = "x";
+        });
+      } else {
+        this.oTime?.stopDecrement();
+        this.xTime?.startDecrement().catch(() => {
+          showWinner("o");
+          document.body.id = "o";
+        });
+      }
+    }
+
     game.currentPlayer = game.currentPlayer == "x" ? "o" : "x";
     if (this.finished) return;
     document.body.className = game.currentPlayer;
@@ -52,6 +77,8 @@ export class BigXO extends XO {
     if (this.areas.every((el) => el.done)) {
       this.finished = true;
       showWinner("draw");
+      this.xTime?.reset();
+      this.oTime?.reset();
     }
   }
 
@@ -77,6 +104,18 @@ export class BigXO extends XO {
         this.areas[area].playAt(i, true);
         socket.emit("played");
       });
+    }
+
+    if (game.timeMode) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "time-wrapper";
+
+      const x = this.xTime!.element;
+      x.id = "x-time";
+      const o = this.oTime!.element;
+      o.id = "o-time";
+      wrapper.append(x, o);
+      cont.before(wrapper);
     }
   }
 

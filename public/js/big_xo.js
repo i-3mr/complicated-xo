@@ -1,16 +1,24 @@
 import { ConnectionState } from "./components/connection_state.js";
 import { game, myArea, settings } from "./main.js";
 import { socket } from "./socket.js";
+import { Time } from "./time.js";
 import { XO } from "./xo.js";
 import { XOArea } from "./xo_area.js";
 export class BigXO extends XO {
-    constructor() {
+    constructor({ minutes }) {
         super();
+        this.oTime = null;
+        this.xTime = null;
         this.areas = [];
         this.array = [];
         this.finished = false;
+        if (game.timeMode) {
+            this.xTime = new Time({ minutes });
+            this.oTime = new Time({ minutes });
+        }
     }
     add({ value, index }) {
+        var _a, _b;
         if (this.array[index] === undefined) {
             this.array[index] = value;
         }
@@ -25,15 +33,33 @@ export class BigXO extends XO {
             });
             this.finished = true;
             showWinner(value);
+            (_a = this.xTime) === null || _a === void 0 ? void 0 : _a.reset();
+            (_b = this.oTime) === null || _b === void 0 ? void 0 : _b.reset();
         }
     }
     changePlace(placeIndex) {
-        var _a;
+        var _a, _b, _c, _d, _e, _f, _g;
+        if (game.timeMode) {
+            if (game.currentPlayer == "x") {
+                (_a = this.xTime) === null || _a === void 0 ? void 0 : _a.stopDecrement();
+                (_b = this.oTime) === null || _b === void 0 ? void 0 : _b.startDecrement().catch(() => {
+                    showWinner("x");
+                    document.body.id = "x";
+                });
+            }
+            else {
+                (_c = this.oTime) === null || _c === void 0 ? void 0 : _c.stopDecrement();
+                (_d = this.xTime) === null || _d === void 0 ? void 0 : _d.startDecrement().catch(() => {
+                    showWinner("o");
+                    document.body.id = "o";
+                });
+            }
+        }
         game.currentPlayer = game.currentPlayer == "x" ? "o" : "x";
         if (this.finished)
             return;
         document.body.className = game.currentPlayer;
-        if ((_a = this.areas[placeIndex]) === null || _a === void 0 ? void 0 : _a.done) {
+        if ((_e = this.areas[placeIndex]) === null || _e === void 0 ? void 0 : _e.done) {
             this.areas.forEach((el) => el.changeState(true));
         }
         else {
@@ -51,6 +77,8 @@ export class BigXO extends XO {
         if (this.areas.every((el) => el.done)) {
             this.finished = true;
             showWinner("draw");
+            (_f = this.xTime) === null || _f === void 0 ? void 0 : _f.reset();
+            (_g = this.oTime) === null || _g === void 0 ? void 0 : _g.reset();
         }
     }
     build() {
@@ -75,6 +103,16 @@ export class BigXO extends XO {
                 this.areas[area].playAt(i, true);
                 socket.emit("played");
             });
+        }
+        if (game.timeMode) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "time-wrapper";
+            const x = this.xTime.element;
+            x.id = "x-time";
+            const o = this.oTime.element;
+            o.id = "o-time";
+            wrapper.append(x, o);
+            cont.before(wrapper);
         }
     }
     rebuild() {

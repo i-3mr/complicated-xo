@@ -393,3 +393,31 @@ button:active {
   border-radius: 10px;
   box-shadow: 0 0 3px;
 }
+
+
+.time-wrapper {
+  width: 100%;
+  margin: 0 auto;
+  max-width: 800px;
+  justify-content: space-between;
+  display: flex;
+  padding: 5px 10px;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+
+#x-time {
+  color: var(--x) !important;
+}
+
+#o-time {
+  color: var(--o) !important;
+}
+
+.time-wrapper > div {
+  transition: scale 0.25s ease-in-out;
+}
+.time-wrapper > div.active {
+  scale: 1.4;
+}

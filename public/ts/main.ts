@@ -10,9 +10,16 @@ const game: {
   me: xo;
   connected: boolean;
   other: ConnectionState | null;
-} = { currentPlayer: "x" as xo, me: "" as xo, connected: false, other: null };
+  timeMode: boolean;
+} = {
+  currentPlayer: "x" as xo,
+  me: "" as xo,
+  connected: false,
+  other: null,
+  timeMode: true,
+};
 
-const myArea = new BigXO();
+const myArea = new BigXO({ minutes: 5 });
 
 const onlineBtn = document.createElement("button");
 onlineBtn.className = "online-btn btn";
@@ -30,18 +37,7 @@ offlineBtn.addEventListener("click", () => {
   start();
 });
 
-// bot button
-const botBtn = document.createElement("button");
-botBtn.className = "bot-btn btn";
-botBtn.textContent = "bot";
-botBtn.addEventListener("click", () => {
-  botBtn.remove();
-  settings.online = false;
-  start();
-  setInterval(bot);
-});
-
-document.querySelector("#app")!.append(onlineBtn, offlineBtn, botBtn);
+document.querySelector("#app")!.append(onlineBtn, offlineBtn);
 
 function start() {
   document.querySelector(".online-btn")?.remove();
@@ -105,15 +101,3 @@ function start() {
   );
 }
 export { game, myArea, settings, start };
-
-function bot() {
-  const spans = [
-    ...document.querySelectorAll(
-      ".xo_area:not(.disabled) span:not([class='o'] , [class='x'])"
-    ),
-  ];
-  if (!spans.length) return;
-
-  const span = spans[Math.floor(Math.random() * spans.length)] as HTMLElement;
-  span?.click();
-}
