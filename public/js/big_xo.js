@@ -38,7 +38,7 @@ export class BigXO extends XO {
         }
     }
     changePlace(placeIndex) {
-        var _a, _b, _c, _d, _e, _f, _g;
+        var _a, _b, _c, _d, _e;
         if (game.timeMode) {
             if (game.currentPlayer == "x") {
                 (_a = this.xTime) === null || _a === void 0 ? void 0 : _a.stopDecrement();
@@ -77,8 +77,6 @@ export class BigXO extends XO {
         if (this.areas.every((el) => el.done)) {
             this.finished = true;
             showWinner("draw");
-            (_f = this.xTime) === null || _f === void 0 ? void 0 : _f.reset();
-            (_g = this.oTime) === null || _g === void 0 ? void 0 : _g.reset();
         }
     }
     build() {
@@ -115,6 +113,16 @@ export class BigXO extends XO {
             cont.before(wrapper);
         }
     }
+    stopTime() {
+        var _a, _b;
+        (_a = this.xTime) === null || _a === void 0 ? void 0 : _a.stopDecrement();
+        (_b = this.oTime) === null || _b === void 0 ? void 0 : _b.stopDecrement();
+    }
+    resetTime() {
+        var _a, _b;
+        (_a = this.xTime) === null || _a === void 0 ? void 0 : _a.reset();
+        (_b = this.oTime) === null || _b === void 0 ? void 0 : _b.reset();
+    }
     rebuild() {
         this.areas.forEach((el) => el.element.remove());
         this.areas = [];
@@ -125,6 +133,7 @@ export class BigXO extends XO {
 }
 // a function that will show a pop up says the winner and ask if he want to play again
 function showWinner(winner) {
+    myArea.stopTime();
     const popup = document.createElement("div");
     popup.className = "popup " + winner;
     // create a content wrapper

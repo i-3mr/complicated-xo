@@ -77,8 +77,6 @@ export class BigXO extends XO {
     if (this.areas.every((el) => el.done)) {
       this.finished = true;
       showWinner("draw");
-      this.xTime?.reset();
-      this.oTime?.reset();
     }
   }
 
@@ -119,6 +117,16 @@ export class BigXO extends XO {
     }
   }
 
+  stopTime() {
+    this.xTime?.stopDecrement();
+    this.oTime?.stopDecrement();
+  }
+
+  resetTime() {
+    this.xTime?.reset();
+    this.oTime?.reset();
+  }
+
   rebuild() {
     this.areas.forEach((el) => el.element.remove());
     this.areas = [];
@@ -130,6 +138,8 @@ export class BigXO extends XO {
 
 // a function that will show a pop up says the winner and ask if he want to play again
 function showWinner(winner: xo | "draw") {
+  myArea.stopTime();
+
   const popup = document.createElement("div");
   popup.className = "popup " + winner;
 
