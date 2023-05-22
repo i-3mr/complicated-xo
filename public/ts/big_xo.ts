@@ -40,23 +40,24 @@ export class BigXO extends XO {
       this.oTime?.reset();
     }
   }
-  changePlace(placeIndex: number) {
-    if (game.timeMode) {
-      if (game.currentPlayer == "x") {
-        this.xTime?.stopDecrement();
-        this.oTime?.startDecrement().catch(() => {
-          showWinner("x");
-          document.body.id = "x";
-        });
-      } else {
-        this.oTime?.stopDecrement();
-        this.xTime?.startDecrement().catch(() => {
-          showWinner("o");
-          document.body.id = "o";
-        });
-      }
-    }
 
+  switchTime() {
+    if (game.currentPlayer == "o") {
+      this.xTime?.stopDecrement();
+      this.oTime?.startDecrement().catch(() => {
+        showWinner("x");
+        document.body.id = "x";
+      });
+    } else {
+      this.oTime?.stopDecrement();
+      this.xTime?.startDecrement().catch(() => {
+        showWinner("o");
+        document.body.id = "o";
+      });
+    }
+  }
+
+  changePlace(placeIndex: number) {
     game.currentPlayer = game.currentPlayer == "x" ? "o" : "x";
     if (this.finished) return;
     document.body.className = game.currentPlayer;
@@ -68,6 +69,7 @@ export class BigXO extends XO {
         else el?.changeState(false);
       });
     }
+    if (game.timeMode && !settings.online) this.switchTime();
 
     if (!settings.online) {
       document.body.className = game.currentPlayer;
@@ -140,7 +142,6 @@ export class BigXO extends XO {
       });
     }
   }
-
 
   rebuild() {
     this.areas.forEach((el) => el.element.remove());

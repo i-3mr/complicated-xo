@@ -39,19 +39,16 @@ export class XOArea extends XO {
     span.className = game.currentPlayer;
     this.array[i] = game.currentPlayer;
 
-    if (game.timeMode) myArea.stopTime();
-    
-
     // online
     if (settings.online && !other) {
       this.wasPlayedAt(i);
-      myArea.stopTime();
       socket.emit("play", [this.id, i]);
       socket.once("played", () => {
         console.log("played was received");
-        myArea.continueTime();
+        myArea.switchTime();
       });
     } else this.wasPlayedAt(i);
+    if (settings.online && other) myArea.switchTime();
   }
 
   wasPlayedAt(i: number) {

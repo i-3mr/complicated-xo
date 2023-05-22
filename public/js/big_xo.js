@@ -37,29 +37,30 @@ export class BigXO extends XO {
             (_b = this.oTime) === null || _b === void 0 ? void 0 : _b.reset();
         }
     }
-    changePlace(placeIndex) {
-        var _a, _b, _c, _d, _e;
-        if (game.timeMode) {
-            if (game.currentPlayer == "x") {
-                (_a = this.xTime) === null || _a === void 0 ? void 0 : _a.stopDecrement();
-                (_b = this.oTime) === null || _b === void 0 ? void 0 : _b.startDecrement().catch(() => {
-                    showWinner("x");
-                    document.body.id = "x";
-                });
-            }
-            else {
-                (_c = this.oTime) === null || _c === void 0 ? void 0 : _c.stopDecrement();
-                (_d = this.xTime) === null || _d === void 0 ? void 0 : _d.startDecrement().catch(() => {
-                    showWinner("o");
-                    document.body.id = "o";
-                });
-            }
+    switchTime() {
+        var _a, _b, _c, _d;
+        if (game.currentPlayer == "o") {
+            (_a = this.xTime) === null || _a === void 0 ? void 0 : _a.stopDecrement();
+            (_b = this.oTime) === null || _b === void 0 ? void 0 : _b.startDecrement().catch(() => {
+                showWinner("x");
+                document.body.id = "x";
+            });
         }
+        else {
+            (_c = this.oTime) === null || _c === void 0 ? void 0 : _c.stopDecrement();
+            (_d = this.xTime) === null || _d === void 0 ? void 0 : _d.startDecrement().catch(() => {
+                showWinner("o");
+                document.body.id = "o";
+            });
+        }
+    }
+    changePlace(placeIndex) {
+        var _a;
         game.currentPlayer = game.currentPlayer == "x" ? "o" : "x";
         if (this.finished)
             return;
         document.body.className = game.currentPlayer;
-        if ((_e = this.areas[placeIndex]) === null || _e === void 0 ? void 0 : _e.done) {
+        if ((_a = this.areas[placeIndex]) === null || _a === void 0 ? void 0 : _a.done) {
             this.areas.forEach((el) => el.changeState(true));
         }
         else {
@@ -70,6 +71,8 @@ export class BigXO extends XO {
                     el === null || el === void 0 ? void 0 : el.changeState(false);
             });
         }
+        if (game.timeMode && !settings.online)
+            this.switchTime();
         if (!settings.online) {
             document.body.className = game.currentPlayer;
             document.body.id = game.currentPlayer;
