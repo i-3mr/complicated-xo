@@ -29,7 +29,7 @@ botBtn.addEventListener("click", () => {
     start();
     setInterval(bot);
 });
-document.querySelector("#app").append(onlineBtn, offlineBtn, botBtn);
+document.querySelector("#app").append(onlineBtn, offlineBtn);
 function start() {
     var _a, _b;
     (_a = document.querySelector(".online-btn")) === null || _a === void 0 ? void 0 : _a.remove();
