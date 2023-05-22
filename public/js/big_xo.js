@@ -1,5 +1,5 @@
 import { ConnectionState } from "./components/connection_state.js";
-import { game, settings } from "./main.js";
+import { game, myArea, settings } from "./main.js";
 import { socket } from "./socket.js";
 import { XO } from "./xo.js";
 import { XOArea } from "./xo_area.js";
@@ -24,6 +24,7 @@ export class BigXO extends XO {
                 }
             });
             this.finished = true;
+            showWinner(value);
         }
     }
     changePlace(placeIndex) {
@@ -46,6 +47,10 @@ export class BigXO extends XO {
         if (!settings.online) {
             document.body.className = game.currentPlayer;
             document.body.id = game.currentPlayer;
+        }
+        if (this.areas.every((el) => el.done)) {
+            this.finished = true;
+            showWinner("draw");
         }
     }
     build() {
@@ -72,4 +77,39 @@ export class BigXO extends XO {
             });
         }
     }
+    rebuild() {
+        this.areas.forEach((el) => el.element.remove());
+        this.areas = [];
+        this.array = [];
+        this.finished = false;
+        this.build();
+    }
+}
+// a function that will show a pop up says the winner and ask if he want to play again
+function showWinner(winner) {
+    const popup = document.createElement("div");
+    popup.className = "popup " + winner;
+    // create a content wrapper
+    const wrapper = document.createElement("div");
+    wrapper.className = "wrapper";
+    const h1 = document.createElement("h1");
+    h1.textContent = winner !== "draw" ? `${winner} won!` : "draw";
+    const btn = document.createElement("button");
+    btn.textContent = "play again";
+    btn.addEventListener("click", () => {
+        var _a;
+        (_a = document.querySelector(".big_xo")) === null || _a === void 0 ? void 0 : _a.remove();
+        popup.remove();
+        myArea.rebuild();
+    });
+    // home button
+    const homeBtn = document.createElement("button");
+    homeBtn.textContent = "home";
+    homeBtn.className = "home-btn";
+    homeBtn.addEventListener("click", () => {
+        location.reload();
+    });
+    wrapper.append(h1, btn, homeBtn);
+    popup.append(wrapper);
+    document.body.append(popup);
 }

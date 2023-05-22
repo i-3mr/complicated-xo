@@ -13,9 +13,9 @@ export class RoomButton {
   build() {
     const button = document.createElement("button");
     button.textContent = this.id;
+    button.id = `i${this.id}`;
     button.className = "room-btn";
     button.addEventListener("click", () => this.join());
-
     return button;
   }
 }
