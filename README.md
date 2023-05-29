@@ -1,3 +1,3 @@
 # complicated-xo
 
-<a href="xo.i3mr.com">link</a>
+<a href="https://xo.i3mr.com">link</a>
