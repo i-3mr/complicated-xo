@@ -1,5 +1,6 @@
 import { game, myArea } from "./main.js";
 import { socket } from "./socket.js";
+import { Time } from "./time.js";
 import { xo } from "./xo.js";
 
 export function joinRoom(res: {
@@ -7,11 +8,14 @@ export function joinRoom(res: {
   player: xo;
   room: string;
   other: boolean;
+  time: number;
 }) {
   socket.on("other_state", (connected: boolean) => {
     if (!connected) game.other?.changeState(2);
     else game.other?.changeState(1);
 
+    myArea.oTime = new Time({ minutes: res.time });
+    myArea.xTime = new Time({ minutes: res.time });
     game.connected = connected;
   });
 

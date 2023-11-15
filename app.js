@@ -18,8 +18,8 @@ io.on("connection", (socket) => {
   });
 
   // ...
-  socket.on("create-room", (callback) => {
-    const newRoom = new Room();
+  socket.on("create-room", ({callback , time}) => {
+    const newRoom = new Room(time);
     const room = uuid.v4().split("-")[0];
     Rooms.rooms[room] = newRoom;
     socket.join(room);

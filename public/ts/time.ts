@@ -52,5 +52,6 @@ export class Time {
     this.stopDecrement();
     this.seconds = this._minutes * 60;
     this.element.textContent = this.format();
+    clearInterval(this.interval);
   }
 }

@@ -69,6 +69,7 @@ function start() {
       [id: string]: {
         x: string;
         o: string;
+        time: number;
       };
     }) => {
       const cont = document.querySelector(".rooms")!;
@@ -94,7 +95,12 @@ function start() {
       createRoom.textContent = "create a room";
       cont.append(createRoom);
       createRoom.addEventListener("click", () => {
-        socket.emit("create-room", joinRoom);
+        const time = prompt("enter time in minutes");
+
+        socket.emit("create-room", {
+          callback: joinRoom,
+          time: !isNaN(Number(time)) && Number(time) > 0 ? Number(time) : 5,
+        });
       });
       document.querySelector("#app")!.append(cont);
     }

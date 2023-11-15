@@ -1,5 +1,3 @@
-import { game } from "./main.js";
-
 export type xo = "x" | "o";
 export class XO {
   array: string[];
@@ -49,8 +47,6 @@ export class XO {
     return array.filter((el, i) => i % 4 === 0);
   }
   static getPlusDiagonal(array: any[], index: number) {
-    return array.filter(
-      (el, i) => i % 2 === 0 && (i % 4 !== 0 || i === 4)
-    );
+    return array.filter((el, i) => i % 2 === 0 && (i % 4 !== 0 || i === 4));
   }
 }

@@ -1,8 +1,9 @@
 const uuid = require("uuid");
 class Room {
-  constructor() {
+  constructor(time) {
     this.array = [[], [], [], [], [], [], [], [], []];
     this.players = { x: null, o: null };
+    this.time = time;
   }
 
   player(name) {
