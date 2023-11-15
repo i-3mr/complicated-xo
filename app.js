@@ -18,7 +18,7 @@ io.on("connection", (socket) => {
   });
 
   // ...
-  socket.on("create-room", ({callback , time}) => {
+  socket.on("create-room", (time, callback) => {
     const newRoom = new Room(time);
     const room = uuid.v4().split("-")[0];
     Rooms.rooms[room] = newRoom;
@@ -30,6 +30,7 @@ io.on("connection", (socket) => {
       player: Rooms.at(room),
       room: room,
       other: false,
+      time: Rooms.rooms[room].time,
     });
 
     socket.on("play", (data, callBack) => {
@@ -52,6 +53,7 @@ io.on("connection", (socket) => {
       player: Rooms.at(room),
       room: room,
       other: true,
+      time: Rooms.rooms[room].time,
     });
     socket.on("play", (data) => {
       io.to(room).emit("play", data);
@@ -69,11 +71,10 @@ io.on("connection", (socket) => {
     console.log(socket.room);
     io.to(socket.room).emit("other_state", true);
   });
-
 });
 
 app.use(express.static("./public"));
 httpServer.listen(
-  process.env.PORT || 3000,
+  process.env.PORT || 3001,
   console.log("listening on port ", process.env.PORT || 3000)
 );

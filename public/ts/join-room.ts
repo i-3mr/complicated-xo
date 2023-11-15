@@ -10,12 +10,15 @@ export function joinRoom(res: {
   other: boolean;
   time: number;
 }) {
+  console.log(res);
+
+  myArea.oTime = new Time({ minutes: res.time });
+  myArea.xTime = new Time({ minutes: res.time });
+
   socket.on("other_state", (connected: boolean) => {
     if (!connected) game.other?.changeState(2);
     else game.other?.changeState(1);
 
-    myArea.oTime = new Time({ minutes: res.time });
-    myArea.xTime = new Time({ minutes: res.time });
     game.connected = connected;
   });
 

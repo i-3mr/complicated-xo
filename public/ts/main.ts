@@ -3,6 +3,7 @@ import { ConnectionState } from "./components/connection_state";
 import { RoomButton } from "./components/room-btn.js";
 import { joinRoom } from "./join-room.js";
 import { socket } from "./socket.js";
+import { Time } from "./time.js";
 import { xo } from "./xo.js";
 const settings = { online: false };
 const game: {
@@ -97,10 +98,11 @@ function start() {
       createRoom.addEventListener("click", () => {
         const time = prompt("enter time in minutes");
 
-        socket.emit("create-room", {
-          callback: joinRoom,
-          time: !isNaN(Number(time)) && Number(time) > 0 ? Number(time) : 5,
-        });
+        if (!isNaN(Number(time)) && Number(time) > 0 ? Number(time) : 5) {
+          socket.emit("create-room", Number(time), joinRoom);
+        } else {
+          socket.emit("create-room", 5, joinRoom);
+        }
       });
       document.querySelector("#app")!.append(cont);
     }

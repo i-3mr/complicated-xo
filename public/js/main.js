@@ -67,7 +67,13 @@ function start() {
         createRoom.textContent = "create a room";
         cont.append(createRoom);
         createRoom.addEventListener("click", () => {
-            socket.emit("create-room", joinRoom);
+            const time = prompt("enter time in minutes");
+            if (!isNaN(Number(time)) && Number(time) > 0 ? Number(time) : 5) {
+                socket.emit("create-room", Number(time), joinRoom);
+            }
+            else {
+                socket.emit("create-room", 5, joinRoom);
+            }
         });
         document.querySelector("#app").append(cont);
     });
